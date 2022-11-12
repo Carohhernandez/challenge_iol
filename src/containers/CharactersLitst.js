@@ -6,6 +6,7 @@ import styled from "styled-components";
 import Spinner from "../components/Spinner";
 import ErrorNote from "../components/ErrorNote";
 import Filter from "../components/Filter";
+import Pagination from "../components/Pagination";
 
 const ListContainer = styled.div`
     display: flex;
@@ -78,12 +79,16 @@ const PillDescription = styled.p`
 const CharactersList = () => {
 
     const [isLoading, setIsLoading] = useState(true);
-    const [characters, setCharacters] = useState([]);
     const [hasErrors, setHasErrors] = useState(false);
-    const [displayedCharacters, setDisplayedCharacter] = useState('');
     
+    const [totalRecords, setTotalRecords] = useState(0);
+    const [page, setPage] = useState(1);
+
+    const [characters, setCharacters] = useState([]); 
+    const [displayedCharacters, setDisplayedCharacter] = useState(''); 
+
     useEffect(() => {
-      fetch('https://rickandmortyapi.com/api/character')
+      fetch(`https://rickandmortyapi.com/api/character/?page=${page}`)
         .then(response => {
             if (response.ok) {
                 return response.json();
@@ -91,6 +96,7 @@ const CharactersList = () => {
             setHasErrors(true);
         })
         .then(data => {
+            setTotalRecords(data.info.count);
             setDisplayedCharacter(data.results);
             setCharacters(data.results);
             setIsLoading(false);
@@ -99,7 +105,7 @@ const CharactersList = () => {
             console.log(error);
             hasErrors(true);
         });
-    }, [hasErrors]); 
+    }, [hasErrors, page]); 
  
     const renderCharacters = () => {
         if (displayedCharacters.length > 0) {
@@ -120,7 +126,14 @@ const CharactersList = () => {
                             </PillInformation>
                         </Pill>
                         )
-                    })};
+                    })}
+                    <Pagination 
+                        totalCount={totalRecords}
+                        currentPage={page}
+                        pageLimit={15}
+                        onPageChange={page => setPage(page)}
+                        siblingCount={2}
+                    />
                 </>
             );      
         } else {
