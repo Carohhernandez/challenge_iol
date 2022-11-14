@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Link } from 'react-router-dom';
 import styled from "styled-components";
+import axios from "axios";
 
 // Components
 import Spinner from "../components/Spinner";
@@ -82,32 +83,74 @@ const CharactersList = () => {
     const [hasErrors, setHasErrors] = useState(false);
     
     const [totalRecords, setTotalRecords] = useState(0);
-    const [page, setPage] = useState(1);
+    const [searchPage, setSearchPage] = useState(1);
+    const [currentPage, setCurrentPage] = useState(1);
 
     const [characters, setCharacters] = useState([]); 
-    const [displayedCharacters, setDisplayedCharacter] = useState(''); 
+    const [filterCharacters, setFilteredCharacters] = useState([]); 
+
+    const getUrls = useCallback(() => {
+        if (currentPage%4 === 2) {
+            return [`https://rickandmortyapi.com/api/character/?page=${searchPage - 1}`,
+                    `https://rickandmortyapi.com/api/character/?page=${searchPage}`];
+        } else if (currentPage%4 === 3) {
+            return [`https://rickandmortyapi.com/api/character/?page=${searchPage - 1}`,
+                    `https://rickandmortyapi.com/api/character/?page=${searchPage}`];
+        } else {
+            return [`https://rickandmortyapi.com/api/character/?page=${searchPage}`];
+        }
+    }, [currentPage, searchPage]);
 
     useEffect(() => {
-      fetch(`https://rickandmortyapi.com/api/character/?page=${page}`)
-        .then(response => {
-            if (response.ok) {
-                return response.json();
-            }
-            setHasErrors(true);
-        })
-        .then(data => {
-            setTotalRecords(data.info.count);
-            setDisplayedCharacter(data.results);
-            setCharacters(data.results);
+        const urls = getUrls();
+
+        const promises = urls.map(url => axios.get(url));
+        Promise.all(promises)
+        .then(values => {
+            let data = [];
+
+            setTotalRecords(values[0].data.info.count);
+
+            values.map(value => {
+                return data = data.concat(value.data.results);
+            });
+            setCharacters(data);
             setIsLoading(false);
-        })
-        .catch((error) => {
-            console.log(error);
-            hasErrors(true);
+        }).catch(err => {
+            setHasErrors(true);
+            console.log(err);
         });
-    }, [hasErrors, page]); 
+
+    }, [searchPage, getUrls]); 
  
-    const renderCharacters = () => {
+    const limitCharacters = charactersArray => {
+        let char = [];
+
+        switch (currentPage%4) {
+            case 0:
+                char = charactersArray.slice(5);
+                break;
+            case 1:
+                char = charactersArray.slice(0, 15);
+                break;
+            case 2:
+                char = charactersArray.slice(15, 30);
+                break;
+            default:
+                char = charactersArray.slice(10, 25);
+                break;
+        };
+
+        return char;
+    };
+        
+    const onSearchPageChange = page => {
+        const searchDifference = Math.floor(page/4);
+        const search = page - searchDifference;
+        setSearchPage(search);
+    };
+
+    const renderCharacters = (displayedCharacters) => {
         if (displayedCharacters.length > 0) {
             return ( 
                 <>
@@ -128,10 +171,11 @@ const CharactersList = () => {
                         )
                     })}
                     <Pagination 
+                        currentPage={currentPage}
                         totalCount={totalRecords}
-                        currentPage={page}
                         pageLimit={15}
-                        onPageChange={page => setPage(page)}
+                        onPageChange={page => onSearchPageChange(page)}
+                        setCurrentPage={page => setCurrentPage(page)}
                         siblingCount={2}
                     />
                 </>
@@ -144,15 +188,29 @@ const CharactersList = () => {
     };
 
     const renderList = () => {
+        let arr = [];
+
+        if (characters.length > 0) {
+            if (filterCharacters.length > 15) {
+                arr = limitCharacters(filterCharacters)
+            } else if (((filterCharacters.length > 0) && (filterCharacters.length <= 15))) {
+                arr = filterCharacters;
+            } else {
+                arr = limitCharacters(characters);
+            }
+        };
+
+        
+
         return (
-        <>
-            <ListHeader>
-                <Filter characters={characters} setDisplayedCharacter={setDisplayedCharacter} />
-           </ListHeader>
-            <ListBody>
-                {renderCharacters()}
-            </ListBody>
-        </>
+            <>
+                <ListHeader>
+                    <Filter characters={characters} setFilteredCharacters={setFilteredCharacters} />
+                </ListHeader>
+                <ListBody>
+                    {renderCharacters(arr)}
+                </ListBody>
+            </>
         );
     };
 
@@ -168,4 +226,3 @@ const CharactersList = () => {
 };
 
 export default CharactersList;
-
