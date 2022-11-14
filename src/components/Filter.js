@@ -14,18 +14,20 @@ const FilterIcon = styled.i`
     margin-right: 10px;
 `;
 
-const Filter = ({ characters, setFilteredCharacters }) => {
+const Filter = ({ characters, setFilteredCharacters, setHasFilter }) => {
 
     const [searchParam, setSearchParam] = useState('');
 
     const handleSearch = () => {
-        if (searchParam === '' || !searchParam) return setFilteredCharacters([]) ;
+        if (searchParam === '' || !searchParam) {
+            setHasFilter(false);
+        };
 
         const filterCharacters =  characters.filter(character => {
             const location = (character.location.name).toLowerCase();
             return (location).includes(searchParam.toLowerCase())
         });
-
+        setHasFilter(true);
         setFilteredCharacters(filterCharacters);
     };
 

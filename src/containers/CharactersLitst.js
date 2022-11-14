@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Link } from 'react-router-dom';
 import styled from "styled-components";
 import axios from "axios";
 
 // Components
+import Pill from "../components/Pill";
 import Spinner from "../components/Spinner";
 import ErrorNote from "../components/ErrorNote";
 import Filter from "../components/Filter";
@@ -33,48 +33,11 @@ const ListBody = styled.div`
     margin: 20px auto;
 `;
 
-const Pill = styled.div`
+const Cell = styled.div`
     width: 30%;
     height: 90px;
-    display: flex;
-    align-items: center;
 
-    border-radius: 50px;
-    background-color: #abb2bf;
-
-    margin: 10px 10px;
-    padding: 0px 10px;
-`;
-
-const PillThumb = styled.img`
-    width: 70px;
-    height: 70px;
-
-    border-radius: 50%;
-`;
-
-const PillInformation = styled.div`
-    display: flex;
-    flex-direction: column;
-
-    padding-left: 10px;
-`;
-
-const PillTitle = styled(Link)`
-    text-decoration: none;
-    color: #fff;
-`;
-
-const PillDescription = styled.p`
-    display: flex;
-
-    margin: 5px;
-    font-size: 14px;
-    font-style: italic;
-
-    i {
-        margin-right: 5px;
-    }
+    margin: 10px;
 `;
 
 const CharactersList = () => {
@@ -88,16 +51,16 @@ const CharactersList = () => {
 
     const [characters, setCharacters] = useState([]); 
     const [filterCharacters, setFilteredCharacters] = useState([]); 
+    const [hasFilter, setHasFilter] = useState(false);
+
+    const baseURL = 'https://rickandmortyapi.com/api/character/?page=';
 
     const getUrls = useCallback(() => {
-        if (currentPage%4 === 2) {
-            return [`https://rickandmortyapi.com/api/character/?page=${searchPage - 1}`,
-                    `https://rickandmortyapi.com/api/character/?page=${searchPage}`];
-        } else if (currentPage%4 === 3) {
-            return [`https://rickandmortyapi.com/api/character/?page=${searchPage - 1}`,
-                    `https://rickandmortyapi.com/api/character/?page=${searchPage}`];
+        if ((currentPage%4 === 2) || (currentPage%4 === 3)) {
+            return [`${baseURL}${searchPage - 1}`,
+                    `${baseURL}${searchPage}`];
         } else {
-            return [`https://rickandmortyapi.com/api/character/?page=${searchPage}`];
+            return [`${baseURL}${searchPage}`];
         }
     }, [currentPage, searchPage]);
 
@@ -125,7 +88,6 @@ const CharactersList = () => {
  
     const limitCharacters = charactersArray => {
         let char = [];
-
         switch (currentPage%4) {
             case 0:
                 char = charactersArray.slice(5);
@@ -140,7 +102,6 @@ const CharactersList = () => {
                 char = charactersArray.slice(10, 25);
                 break;
         };
-
         return char;
     };
         
@@ -150,25 +111,16 @@ const CharactersList = () => {
         setSearchPage(search);
     };
 
-    const renderCharacters = (displayedCharacters) => {
-        if (displayedCharacters.length > 0) {
+    const renderItems = (items) => {
+        if (items.length > 0) {
             return ( 
                 <>
-                    {displayedCharacters.map(character => {
+                    {items.map(item => {
                         return (
-                        <Pill key={character.id}>
-                            <PillThumb src={character.image} alt={character.name} />
-                            <PillInformation>
-                                <PillTitle to={`/characters/${character.id}`}>
-                                    {character.name}
-                                </PillTitle>
-                                <PillDescription>
-                                    <i className="fa fa-map-marker" aria-hidden="true"></i>
-                                    {character.location.name}
-                                </PillDescription>
-                            </PillInformation>
-                        </Pill>
-                        )
+                            <Cell key={item.id}>
+                                <Pill item={item} url={`/characters/${item.id}`} />
+                            </Cell>
+                        );
                     })}
                     <Pagination 
                         currentPage={currentPage}
@@ -188,41 +140,39 @@ const CharactersList = () => {
     };
 
     const renderList = () => {
-        let arr = [];
+        let items = [];
 
         if (characters.length > 0) {
-            if (filterCharacters.length > 15) {
-                arr = limitCharacters(filterCharacters)
-            } else if (((filterCharacters.length > 0) && (filterCharacters.length <= 15))) {
-                arr = filterCharacters;
+            if (hasFilter) {
+                if (filterCharacters.length > 15) {
+                    items = limitCharacters(filterCharacters)
+                } else if (((filterCharacters.length > 0) && (filterCharacters.length <= 15))) {
+                    items = filterCharacters;
+                }
             } else {
-                arr = limitCharacters(characters);
+                items = limitCharacters(characters);
             }
         };
-
-        
 
         return (
             <>
                 <ListHeader>
-                    <Filter characters={characters} setFilteredCharacters={setFilteredCharacters} />
+                    <Filter characters={characters} setFilteredCharacters={setFilteredCharacters} setHasFilter={setHasFilter} />
                 </ListHeader>
                 <ListBody>
-                    {renderCharacters(arr)}
+                    {renderItems(items)}
                 </ListBody>
             </>
         );
     };
 
-    if (isLoading) {
-        return <Spinner />
-    }
+    if (isLoading) { return <Spinner /> }
 
     return (
         <ListContainer>
             {hasErrors ? <ErrorNote message="Sorry... but something went wrong" /> : renderList()}
         </ListContainer>
-    )
+    );
 };
 
 export default CharactersList;
