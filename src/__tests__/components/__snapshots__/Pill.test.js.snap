@@ -1,0 +1,38 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders Pill correctly 1`] = `
+<DocumentFragment>
+  <div
+    class="sc-bcXHqe eeQyYs"
+  >
+    <div
+      class="sc-gswNZR fKhFco"
+    >
+      <img
+        alt="Alan Rails"
+        class="sc-dkrFOg gOYJRp"
+        src="https://rickandmortyapi.com/api/character/avatar/10.jpeg"
+      />
+    </div>
+    <div
+      class="sc-hLBbgP fYoeVE"
+    >
+      <a
+        class="sc-eDvSVe jlcEpK"
+        href="/characters/10"
+      >
+        Alan Rails
+      </a>
+      <p
+        class="sc-jSUZER hsUrVP"
+      >
+        <i
+          aria-hidden="true"
+          class="fa fa-map-marker"
+        />
+        Worldender's lair
+      </p>
+    </div>
+  </div>
+</DocumentFragment>
+`;

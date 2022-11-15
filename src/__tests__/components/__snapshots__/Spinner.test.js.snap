@@ -1,0 +1,14 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders Spinner correctly 1`] = `
+<DocumentFragment>
+  <div
+    class="sc-bcXHqe bYdSAJ"
+  >
+    <i
+      aria-hidden="true"
+      class="fa fa-refresh fa-spin fa-fw"
+    />
+  </div>
+</DocumentFragment>
+`;

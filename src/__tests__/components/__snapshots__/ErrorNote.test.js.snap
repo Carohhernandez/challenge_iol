@@ -1,0 +1,24 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders ErrorNote correctly 1`] = `
+<DocumentFragment>
+  <div
+    class="sc-bcXHqe hAFWbH"
+  >
+    <div
+      class="sc-gswNZR fXKJtf"
+    >
+      <h1 />
+      <svg>
+        morty.svg
+      </svg>
+    </div>
+    <a
+      class="sc-dkrFOg eBxNmd"
+      href="/"
+    >
+       Go back to list 
+    </a>
+  </div>
+</DocumentFragment>
+`;
