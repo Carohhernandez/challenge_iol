@@ -2,6 +2,9 @@ import React, { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 import axios from "axios";
 
+// Utils
+import {devices } from '../utils/devices';
+
 // Components
 import Pill from "../components/Pill";
 import Spinner from "../components/Spinner";
@@ -14,14 +17,23 @@ const ListContainer = styled.div`
     flex-direction: column;
     align-items: center;
 
-    padding: 30px;
+    padding: 5px;
+
+    @media${devices.tablet} {
+        padding: 30px;
+    }
 `;
 
 const ListHeader = styled.div`
     width: 100%;
-
     display: flex;
-    justify-content: flex-end;
+
+    justify-content: center;
+    margin: 10px;
+
+    @media${devices.tablet} {
+        justify-content: flex-end;
+    }
 `;
 
 const ListBody = styled.div`
@@ -34,10 +46,18 @@ const ListBody = styled.div`
 `;
 
 const Cell = styled.div`
-    width: 30%;
+    width: 90%;
     height: 90px;
 
     margin: 10px;
+
+    @media${devices.tablet} {
+        width: 40%;
+    }
+
+    @media ${devices.laptop} {
+        width: 30%;
+    }
 `;
 
 const CharactersList = () => {

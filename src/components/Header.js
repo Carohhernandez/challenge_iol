@@ -2,6 +2,9 @@ import React from 'react';
 import { Link } from "react-router-dom";
 import styled from 'styled-components';
 
+// Utils
+import { devices } from '../utils/devices';
+
 // SVG
 import {ReactComponent as RickLogo} from '../svg/rick.svg';
 
@@ -10,7 +13,11 @@ const HeaderContainer = styled.div`
     align-items: center;
 
     background-color: #fff;
-    padding: 30px 20px; 
+    padding: 10px 0px;
+
+    @media${devices.tablet} {
+        padding: 30px 20px; 
+    };
 `;
 
 const HeaderLogo = styled(RickLogo)`

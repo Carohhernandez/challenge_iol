@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import axios from "axios";
 import styled from "styled-components";
+
+// Utils
+import { devices } from '../utils/devices';
 
 // Components
 import Spinner from "../components/Spinner";
@@ -15,46 +19,77 @@ const DetailsContainer = styled.div`
 
 const CardContainer = styled.div`
     width: 100%;
-    height: 400px;
+    height: 80vh;
     display: flex;
+    flex-direction: column;
 
     border-radius: 20px;
    
     box-shadow: 0px 20px 10px 5px #656565;
     background-color: #abb2bf;
+
+    @media${devices.tablet} {
+        height: 60vh;
+        flex-direction: row;
+    };
+
+    @media${devices.desktop} {
+        height: 60vh;
+    }
 `;
 
 const CardLabel = styled.label`
-    font-size: 25px;
+    font-size: 18px;
     font-family: "Roboto", sans-serif;
-    margin-right: ${props => props.margin ? props.margin : '0px'};
+    margin: 0px 20px;
+
+    @media${devices.tablet} {
+        font-size: 25px;
+        margin: 0px ${props => props.margin ? props.margin : '0px'} 0px 0px;
+    };
 `;
 
 const CardLeft = styled.div`
-    width: 33%;
+    width: 100%;
+    height: 40%;    
     background-image: url(${props => props.image && props.image});
     background-color: #cccccc; 
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
 
-    border-radius: 20px;
+    border-radius: 20px 20px 0px 0px;
+
+    @media${devices.tablet} {
+        width: 33%;
+        height: 100%;
+        border-radius: 20px;
+    };
 `;
 
 const CardRight = styled.div`
-    width: 77%;
+    width: 100%;
+    height: 60%;
     display: flex;
     flex-direction: column;
     justify-content: space-around;
 
-    padding: 35px;
+    @media${devices.tablet} {
+        width: 77%;
+        height: 100%;
+    }
 `;
 
 const Box = styled.div`
-    width: 33%;
+    width: 100%;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
+
+    @media${devices.tablet} {
+        width: 33%;
+        flex-direction: column;
+    }
 `;
 
 const TitleContainer = styled.div`
@@ -67,12 +102,24 @@ const TitleContainer = styled.div`
 
 const InformationContainer = styled.div`
     display: flex;
+    flex-direction: column;
+
+    padding: 5px 15px;
+
+    @media${devices.tablet} {
+        flex-direction: row;
+        padding: 0px;
+    };
 `;
 
 const BoxIcon = styled.i`
-    font-size: 30px;
+    font-size: 20px;
     color: ${({ color }) => color ? color : "fff"};
     margin-bottom: 15px;
+
+    @media${devices.tablet} {
+        font-size: 30px;
+    }
 `;
 
 const CharacterDetails = () => {
@@ -84,20 +131,16 @@ const CharacterDetails = () => {
     const {id} = useParams();
 
     useEffect(() => {
-        fetch(`https://rickandmortyapi.com/api/character/${id}`)
-        .then(response => {
-            if (response.ok) {
-                return response.json();
-            }
-            setHasErrors(true);
-        })
-        .then(data => {
-            setCharacter(data);
+        setIsLoading(true);
+        axios.get(`https://rickandmortyapi.com/api/character/${id}`)
+        .then((response) => {
+            setCharacter(response.data);
             setIsLoading(false);
         })
         .catch((error) => {
             console.log(error);
-            hasErrors(true);
+            setIsLoading(false);
+            setHasErrors(true);
         });
     }, [id, hasErrors])
 
@@ -153,7 +196,7 @@ const CharacterDetails = () => {
     
     return (
         <DetailsContainer>
-            {hasErrors ? <ErrorNote withBack/> : renderDetails()}
+            {hasErrors ? <ErrorNote message="The character doesn't exist" withBack/> : renderDetails()}
         </DetailsContainer>
     )
 };

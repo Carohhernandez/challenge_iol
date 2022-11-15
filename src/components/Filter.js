@@ -1,9 +1,23 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
+// Utils
+import { devices } from '../utils/devices';
+
 const FilterContainer = styled.div`
     display: flex;
+    flex-direction: column;
+
     align-items: center;
+
+    @media${devices.tablet} {
+        flex-direction: row;
+    }
+`;
+
+const FilterBox = styled.div`
+    display: flex;
+    margin-bottom: 10px;
 `;
 
 const FilterInput = styled.input`
@@ -33,15 +47,19 @@ const Filter = ({ characters, setFilteredCharacters, setHasFilter }) => {
 
     return (
         <FilterContainer>
-                <FilterIcon className="fa fa-filter"></FilterIcon>
-                <label>Search by Location:</label>
-                <FilterInput 
-                    type="text"
-                    name="searchInput"
-                    value={searchParam}
-                    onChange={(e) => setSearchParam(e.target.value)}
-                />
-                <button onClick={handleSearch}><i className="fa fa-search"></i></button>
+                <FilterBox>
+                    <FilterIcon className="fa fa-filter"></FilterIcon>
+                    <label>Search by Location:</label>
+                </FilterBox>
+                <FilterBox>
+                    <FilterInput 
+                        type="text"
+                        name="searchInput"
+                        value={searchParam}
+                        onChange={(e) => setSearchParam(e.target.value)}
+                    />
+                    <button onClick={handleSearch}><i className="fa fa-search"></i></button>
+                </FilterBox>
         </FilterContainer>
     );
 };
