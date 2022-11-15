@@ -21,14 +21,14 @@ const Filter = ({ characters, setFilteredCharacters, setHasFilter }) => {
     const handleSearch = () => {
         if (searchParam === '' || !searchParam) {
             setHasFilter(false);
+        } else {
+            const filterCharacters =  characters.filter(character => {
+                const location = (character.location.name).toLowerCase();
+                return (location).includes(searchParam.toLowerCase())
+            });
+            setHasFilter(true);
+            setFilteredCharacters(filterCharacters);
         };
-
-        const filterCharacters =  characters.filter(character => {
-            const location = (character.location.name).toLowerCase();
-            return (location).includes(searchParam.toLowerCase())
-        });
-        setHasFilter(true);
-        setFilteredCharacters(filterCharacters);
     };
 
     return (

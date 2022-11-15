@@ -122,7 +122,8 @@ const CharactersList = () => {
                             </Cell>
                         );
                     })}
-                    <Pagination 
+                    <Pagination
+                        hasFilter={hasFilter} 
                         currentPage={currentPage}
                         totalCount={totalRecords}
                         pageLimit={15}
@@ -144,9 +145,7 @@ const CharactersList = () => {
 
         if (characters.length > 0) {
             if (hasFilter) {
-                if (filterCharacters.length > 15) {
-                    items = limitCharacters(filterCharacters)
-                } else if (((filterCharacters.length > 0) && (filterCharacters.length <= 15))) {
+                if (filterCharacters.length > 0) {
                     items = filterCharacters;
                 }
             } else {
@@ -157,7 +156,7 @@ const CharactersList = () => {
         return (
             <>
                 <ListHeader>
-                    <Filter characters={characters} setFilteredCharacters={setFilteredCharacters} setHasFilter={setHasFilter} />
+                    <Filter characters={limitCharacters(characters)} setFilteredCharacters={setFilteredCharacters} setHasFilter={setHasFilter} />
                 </ListHeader>
                 <ListBody>
                     {renderItems(items)}

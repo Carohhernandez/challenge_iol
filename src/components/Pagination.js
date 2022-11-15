@@ -25,7 +25,7 @@ const PaginationButton = styled.button`
     color: ${props => props.active ? "#000" : "#fff"};
 `;
 
-const Pagination = ({ currentPage, totalCount, pageLimit, onPageChange, siblingCount, setCurrentPage}) => {
+const Pagination = ({ currentPage, totalCount, pageLimit, onPageChange, siblingCount, setCurrentPage, hasFilter}) => {
 
     const paginationRange = usePagination({
         currentPage,
@@ -44,10 +44,10 @@ const Pagination = ({ currentPage, totalCount, pageLimit, onPageChange, siblingC
         <PaginationContainer>
             <li>
                 <PaginationButton 
-                    disabled={currentPage === 1} 
+                    disabled={(currentPage === 1) || hasFilter} 
                     onClick={() => {
-                        onPageChange(currentPage - 1);
-                        setCurrentPage(currentPage - 1);
+                            onPageChange(currentPage - 1);
+                            setCurrentPage(currentPage - 1);
                         }
                     }
                 >
@@ -62,6 +62,7 @@ const Pagination = ({ currentPage, totalCount, pageLimit, onPageChange, siblingC
                 return (
                     <li key={i}>
                         <PaginationButton
+                            disabled={hasFilter} 
                             onClick={() => {
                                 onPageChange(pageNumber);
                                 setCurrentPage(pageNumber);
@@ -76,10 +77,10 @@ const Pagination = ({ currentPage, totalCount, pageLimit, onPageChange, siblingC
             })}
             <li>
                 <PaginationButton 
-                    disabled={currentPage === lastPage} 
+                    disabled={(currentPage === lastPage) || hasFilter} 
                     onClick={() => {
-                        onPageChange(currentPage + 1);
-                        setCurrentPage(currentPage + 1);
+                            onPageChange(currentPage + 1);
+                            setCurrentPage(currentPage + 1);
                         }
                     }
                 >

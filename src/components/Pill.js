@@ -12,14 +12,22 @@ const PillContainer = styled.div`
     padding: 10px;
 `;
 
+const PillThumbContainer = styled.div`
+    width: 20%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+`;
+
 const PillThumb = styled.img`
-    width: 70px;
+    width: 100%;
     height: 70px;
 
     border-radius: 50%;
 `;
 
 const PillInformation = styled.div`
+    width: 80%;
     display: flex;
     flex-direction: column;
 
@@ -29,14 +37,22 @@ const PillInformation = styled.div`
 const PillTitle = styled(Link)`
     text-decoration: none;
     color: #fff;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 `;
 
 const PillDescription = styled.p`
-    display: flex;
+    display: inline-block;
 
-    margin: 5px;
+    margin: 5px 0px;
     font-size: 14px;
     font-style: italic;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 
     i {
         margin-right: 5px;
@@ -45,15 +61,17 @@ const PillDescription = styled.p`
 
 const Pill = ({item, url}) => {
     return (
-        <PillContainer key={item.id}>
-            <PillThumb src={item.image} alt={item.name} />
+        <PillContainer key={item?.id}>
+            <PillThumbContainer>
+                <PillThumb src={item?.image} alt={item?.name} />
+            </PillThumbContainer>
             <PillInformation>
                 <PillTitle to={url}>
-                    {item.name}
+                    {item?.name}
                 </PillTitle>
                 <PillDescription>
                     <i className="fa fa-map-marker" aria-hidden="true"></i>
-                    {item.location.name}
+                    {item?.location?.name}
                 </PillDescription>
             </PillInformation>
         </PillContainer>
