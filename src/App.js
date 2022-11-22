@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import { createGlobalStyle } from 'styled-components'
 
 // Containers
@@ -23,14 +23,12 @@ const GlobalStyle = createGlobalStyle`
 
 const App = () => (
   <>
-      <GlobalStyle />
-      <BrowserRouter>
-          <Header />
-          <Routes>
-            <Route path="/" element={<CharactersList/>} exact />
-            <Route path="/characters/:id" element={<CharacterDetails/>} exact/>
-          </Routes>
-      </BrowserRouter>
+    <GlobalStyle />
+    <Header />
+    <Routes>
+      <Route path="/" element={<CharactersList/>} exact />
+      <Route path="/characters/:id" element={<CharacterDetails/>} exact/>
+    </Routes>
   </>
 );
 

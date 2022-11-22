@@ -43,7 +43,7 @@ const PaginationButton = styled.button`
     };
 `;
 
-const Pagination = ({ currentPage, totalCount, pageLimit, onPageChange, siblingCount, setCurrentPage, hasFilter}) => {
+const Pagination = ({ currentPage, totalCount, pageLimit, onPageChange, siblingCount, hasFilter}) => {
 
     const paginationRange = usePagination({
         currentPage,
@@ -64,11 +64,7 @@ const Pagination = ({ currentPage, totalCount, pageLimit, onPageChange, siblingC
                 <PaginationButton 
                     isAction
                     disabled={(currentPage === 1) || hasFilter} 
-                    onClick={() => {
-                            onPageChange(currentPage - 1);
-                            setCurrentPage(currentPage - 1);
-                        }
-                    }
+                    onClick={() => onPageChange(currentPage - 1)}
                 >
                     <span aria-hidden="true">&laquo;</span>
                 </PaginationButton>
@@ -83,11 +79,7 @@ const Pagination = ({ currentPage, totalCount, pageLimit, onPageChange, siblingC
                         <li key={i}>
                             <PaginationButton
                                 disabled={hasFilter} 
-                                onClick={() => {
-                                    onPageChange(pageNumber);
-                                    setCurrentPage(pageNumber);
-                                    }
-                                }
+                                onClick={() => onPageChange(pageNumber)}
                                 active={currentPage === pageNumber}
                             >
                                 {pageNumber}
@@ -100,11 +92,7 @@ const Pagination = ({ currentPage, totalCount, pageLimit, onPageChange, siblingC
                 <PaginationButton 
                     isAction
                     disabled={(currentPage === lastPage) || hasFilter} 
-                    onClick={() => {
-                            onPageChange(currentPage + 1);
-                            setCurrentPage(currentPage + 1);
-                        }
-                    }
+                    onClick={() => onPageChange(currentPage + 1)}
                 >
                     <span aria-hidden="true">&raquo;</span>
                 </PaginationButton>

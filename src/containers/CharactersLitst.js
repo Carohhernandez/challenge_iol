@@ -1,6 +1,9 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import axios from "axios";
+import { useQuery } from '@apollo/client';
+
+// Queries
+import { FETCH_CHARACTERS_BY_ID } from "../queries/fetchCharacters";
 
 // Utils
 import {devices } from '../utils/devices';
@@ -61,75 +64,31 @@ const Cell = styled.div`
 `;
 
 const CharactersList = () => {
-
-    const [isLoading, setIsLoading] = useState(true);
-    const [hasErrors, setHasErrors] = useState(false);
     
     const [totalRecords, setTotalRecords] = useState(0);
-    const [searchPage, setSearchPage] = useState(1);
     const [currentPage, setCurrentPage] = useState(1);
 
     const [characters, setCharacters] = useState([]); 
     const [filterCharacters, setFilteredCharacters] = useState([]); 
     const [hasFilter, setHasFilter] = useState(false);
 
-    const baseURL = 'https://rickandmortyapi.com/api/character/?page=';
+    // Assume the ids are consecutive
+    const range = () => {
+        const length = 15;
+        const end = length * currentPage;
+        const start = end - (length - 1);
+        return Array.from({ length }, (_, idx) => idx + start);
+    };
 
-    const getUrls = useCallback(() => {
-        if ((currentPage%4 === 2) || (currentPage%4 === 3)) {
-            return [`${baseURL}${searchPage - 1}`,
-                    `${baseURL}${searchPage}`];
-        } else {
-            return [`${baseURL}${searchPage}`];
-        }
-    }, [currentPage, searchPage]);
+    const ids = range();
+    const { loading, error, data } = useQuery(FETCH_CHARACTERS_BY_ID, { variables: { ids } });
 
     useEffect(() => {
-        const urls = getUrls();
-
-        const promises = urls.map(url => axios.get(url));
-        Promise.all(promises)
-        .then(values => {
-            let data = [];
-
-            setTotalRecords(values[0].data.info.count);
-
-            values.map(value => {
-                return data = data.concat(value.data.results);
-            });
-            setCharacters(data);
-            setIsLoading(false);
-        }).catch(err => {
-            setHasErrors(true);
-            console.log(err);
-        });
-
-    }, [searchPage, getUrls]); 
- 
-    const limitCharacters = charactersArray => {
-        let char = [];
-        switch (currentPage%4) {
-            case 0:
-                char = charactersArray.slice(5);
-                break;
-            case 1:
-                char = charactersArray.slice(0, 15);
-                break;
-            case 2:
-                char = charactersArray.slice(15, 30);
-                break;
-            default:
-                char = charactersArray.slice(10, 25);
-                break;
-        };
-        return char;
-    };
-        
-    const onSearchPageChange = page => {
-        const searchDifference = Math.floor(page/4);
-        const search = page - searchDifference;
-        setSearchPage(search);
-    };
+        if (!loading) {
+            setTotalRecords(data.characters.info.count);
+            setCharacters(data.charactersByIds);
+        }
+    }, [data, loading]);
 
     const renderItems = (items) => {
         if (items.length > 0) {
@@ -147,8 +106,7 @@ const CharactersList = () => {
                         currentPage={currentPage}
                         totalCount={totalRecords}
                         pageLimit={15}
-                        onPageChange={page => onSearchPageChange(page)}
-                        setCurrentPage={page => setCurrentPage(page)}
+                        onPageChange={page => setCurrentPage(page)}
                         siblingCount={2}
                     />
                 </>
@@ -169,14 +127,14 @@ const CharactersList = () => {
                     items = filterCharacters;
                 }
             } else {
-                items = limitCharacters(characters);
+                items = characters;
             }
         };
 
         return (
             <>
                 <ListHeader>
-                    <Filter characters={limitCharacters(characters)} setFilteredCharacters={setFilteredCharacters} setHasFilter={setHasFilter} />
+                    <Filter characters={characters} setFilteredCharacters={setFilteredCharacters} setHasFilter={setHasFilter} />
                 </ListHeader>
                 <ListBody>
                     {renderItems(items)}
@@ -185,11 +143,13 @@ const CharactersList = () => {
         );
     };
 
-    if (isLoading) { return <Spinner /> }
+    if (loading) { return <Spinner /> }
+
+    if (error ) { return <ErrorNote message="Sorry... but something went wrong" /> }
 
     return (
         <ListContainer>
-            {hasErrors ? <ErrorNote message="Sorry... but something went wrong" /> : renderList()}
+            {renderList()}
         </ListContainer>
     );
 };
